@@ -12,11 +12,12 @@ flake = (filePath, callback) ->
   skip_line = false
 
   params = ["--show-source", filePath]
-  ignoreErrors = atom.config.get "flake8.ignoreErrors"
-  mcCabeComplexityThreshold = atom.config.get "flake8.mcCabeComplexityThreshold"
-  flake8Path = atom.config.get "flake8.flake8Path"
+  ignoreErrors = atom.config.get "simple-flake8.ignoreErrors"
+  mcCabeComplexityThreshold = atom.config.get "simple-flake8.mcCabeComplexityThreshold"
+  flake8Path = atom.config.get "simple-flake8.flake8Path"
 
   if not fs.existsSync(flake8Path)
+    console.log('not at ' + flake8Path)
     console.log("Unable to get report, please check flake8 bin path")
     callback errors
     return
@@ -58,26 +59,31 @@ flake = (filePath, callback) ->
     callback errors
 
 
-module.exports =
-
+# module.exports =
 class SimpleFlake8View extends SelectListView
 
   configDefaults:
     flake8Path: "/usr/bin/flake8"
     ignoreErrors: ""
     mcCabeComplexityThreshold: ""
-    validateOnSave: true
+    # validateOnSave: true
 
-  @activate: ->
-    new SimpleFlake8View
-
-  keyBindings: null
+  activate: ->
+    console.log('Activating Flake8 Linter')
 
   initialize: ->
     super
 
     @addClass('simple-flake8 overlay from-top')
     atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
+
+    # atom.config.observe 'simple-flake8.validateOnSave', {callNow: true}, (value) ->
+    # if value == true
+    #   atom.workspace.eachEditor (editor) ->
+    #     editor.buffer.on 'saved', @attach
+    # else
+    #   atom.workspace.eachEditor (editor) ->
+    #     editor.buffer.off 'saved', @attach
 
   getFilterKey: ->
     'message'
@@ -93,7 +99,6 @@ class SimpleFlake8View extends SelectListView
     return unless editor?
     return unless editor.getGrammar().name == 'Python'
 
-    # @storeFocusedElement()
     filePath = editor.getPath()
 
     @setLoading('Running Flake8 Linter...')
@@ -110,15 +115,8 @@ class SimpleFlake8View extends SelectListView
           message = error.line + ' - ' + error.type + " " + error.message
         else
           message = error.message
-        # console.log(message)
         error_list.push(error)
-
       @setItems(error_list)
-
-    # if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
-    #   @eventElement = @previouslyFocusedElement
-    # else
-    #   @eventElement = atom.workspaceView
 
   viewForItem: (error) ->
     if error.type
@@ -139,3 +137,6 @@ class SimpleFlake8View extends SelectListView
       line = error.line
       pos = error.position
     editor.cursors[0].setBufferPosition([line, pos], options={'autoscroll': true})
+
+
+module.exports = new SimpleFlake8View()
