@@ -100,35 +100,31 @@ class SimpleFlake8View extends SelectListView
     editor = atom.workspace.getActiveEditor()
     return unless editor?
     return unless editor.getGrammar().name == 'Python'
+    #
+    # @storeFocusedElement()
+    #
+    # if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
+    #   @eventElement = @previouslyFocusedElement
+    # else
+    #   @eventElement = atom.workspaceView
 
-    @storeFocusedElement()
-
-    if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
-      @eventElement = @previouslyFocusedElement
-    else
-      @eventElement = atom.workspaceView
-
+    @eventElement = atom.workspaceView
     filePath = editor.getPath()
 
+    error_list = []
     flake filePath, (errors) ->
       if errors.length == 0
         return
 
-      events = []
       for error in errors
         if error.type
           message = error.type + " " + error.message
         else
           message = error.message
         console.log(message)
-        events.push({message, error})
-      @setItems(events)
+        error_list.push({message, error})
 
-    # events = []
-    # for eventName, eventDescription of _.extend($(window).events(), @eventElement.events())
-    #   events.push({eventName, eventDescription}) if eventDescription
-    # events = _.sortBy(events, 'eventDescription')
-    # @setItems(events)
+    @setItems(error_list)
 
     atom.workspaceView.append(this)
     @focusFilterEditor()
