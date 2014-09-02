@@ -16,12 +16,7 @@ flake = (filePath, callback) ->
   flake8Path = atom.config.get "flake8.flake8Path"
 
   if not fs.existsSync(flake8Path)
-    errors.push {
-      "message": "Unable to get report, please check flake8 bin path",
-      "evidence": flake8Path,
-      "position": 1,
-      "line": 1
-    }
+    console.log("Unable to get report, please check flake8 bin path")
     callback errors
     return
 
@@ -57,16 +52,12 @@ flake = (filePath, callback) ->
 
   # Watch for the exit code
   proc.on 'exit', (exit_code, signal) ->
-      if exit_code == 1 and errors.length == 0
-        errors.push {
-          "message": "flake8 is crashing, please check flake8 bin path or reinstall flake8",
-          "evidence": flake8Path,
-          "position": 1,
-          "line": 1
-        }
-      callback errors
+    if exit_code == 1 and errors.length == 0
+      console.log('Flake8 is crashing. Check flake8 bin path.')
+    callback errors
 
 module.exports =
+
 
 class SimpleFlake8View extends SelectListView
 
@@ -88,7 +79,7 @@ class SimpleFlake8View extends SelectListView
     atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
 
   getFilterKey: ->
-    'eventDescription'
+    'message'
 
   toggle: ->
     if @hasParent()
@@ -100,43 +91,46 @@ class SimpleFlake8View extends SelectListView
     editor = atom.workspace.getActiveEditor()
     return unless editor?
     return unless editor.getGrammar().name == 'Python'
-    #
-    # @storeFocusedElement()
-    #
-    # if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
-    #   @eventElement = @previouslyFocusedElement
-    # else
-    #   @eventElement = atom.workspaceView
 
-    @eventElement = atom.workspaceView
+    @storeFocusedElement()
     filePath = editor.getPath()
 
-    error_list = []
-    flake filePath, (errors) ->
+    @setLoading('Running Flake8 Lint...')
+    atom.workspaceView.append(this)
+    @focusFilterEditor()
+
+    flake filePath, (errors) =>
+      error_list = []
       if errors.length == 0
         return
 
       for error in errors
         if error.type
-          message = error.type + " " + error.message
+          message = error.line + ' - ' + error.type + " " + error.message
         else
           message = error.message
-        console.log(message)
+        # console.log(message)
         error_list.push({message, error})
 
-    @setItems(error_list)
+      @setItems(error_list)
 
-    atom.workspaceView.append(this)
-    @focusFilterEditor()
+    if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
+      @eventElement = @previouslyFocusedElement
+    else
+      @eventElement = atom.workspaceView
 
-  viewForItem: ({eventName, eventDescription}) ->
-    keyBindings = @keyBindings
+  viewForItem: ({message, error}) ->
+    console.log('Processing: ' + message)
+    # data = '<li class="event"><div class="pull-right"></div><span title="error">' + message + '</span></li>'
+    # console.log('Returning html: ' + data)
+    # return data
+    base_msg = error.type + ' - ' + error.message
     $$ ->
-      @li class: 'event', 'data-event-name': eventName, =>
+      @li class: 'event', 'data-event-name': error.type, =>
         @div class: 'pull-right', =>
-          for binding in keyBindings when binding.command is eventName
-            @kbd _.humanizeKeystroke(binding.keystrokes), class: 'key-binding'
-        @span eventDescription, title: eventName
+            # Use the keybinding class to display line numbers
+            @kbd "Line: " + error.line, class: 'key-binding'
+        @span base_msg[0..65], title: message
 
   confirmed: ({eventName}) ->
     @cancel()
