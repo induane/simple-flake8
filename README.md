@@ -1,6 +1,6 @@
 # Simple Flake8 linter package
 
-Find and display flake8 linting errors using `cmd-shift-f`(OSX) or `ctrl-shift-f`(Linux/Wndows) in Atom.
+Find and display flake8 linting errors using `cmd-shift-8`(OSX) or `ctrl-shift-8`(Linux/Wndows) in Atom.
 
 This package is inspired by the command pallet (https://github.com/atom/command-palette)
 and used it as the starting point for its codebase.
