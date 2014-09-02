@@ -1,0 +1,15 @@
+{
+  "name": "command-palette",
+  "version": "0.24.0",
+  "main": "./lib/simple-flake8-view",
+  "description": "Finds flake8 linting errors using `cmd-shift-f`(OSX) or `ctrl-shift-f`(Linux/Wndows).",
+  "activationEvents": "simple-flake8:toggle",
+  "repository": "https://github.com/induane/simple-flake8",
+  "license": "MIT",
+  "engines": {
+    "atom": "*"
+  },
+  "dependencies": {
+    "underscore-plus": "1.x"
+  }
+}

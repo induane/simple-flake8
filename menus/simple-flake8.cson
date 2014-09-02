@@ -1,0 +1,25 @@
+'menu': [
+  {
+    'label': 'View'
+    'submenu': [
+      {
+        'label': 'Toggle Simple Flake8'
+        'command': 'simple-flake8:toggle'
+      }
+    ]
+  }
+  {
+    'label': 'Packages'
+    'submenu': [
+      {
+        'label': 'Simple Flake8',
+        'submenu': [
+          {
+            'label': 'Run Flake8'
+            'command': 'simple-flake8:toggle'
+          }
+        ]
+      }
+    ]
+  }
+]

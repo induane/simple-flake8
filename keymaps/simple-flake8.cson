@@ -1,0 +1,8 @@
+'.platform-darwin, .platform-darwin .simple-flake8 .editor':
+  'cmd-shift-f': 'simple-flake8:toggle'
+
+'.platform-win32, .platform-win32 .simple-flake8 .editor':
+  'ctrl-shift-f': 'simple-flake8:toggle'
+
+'.platform-linux, .platform-linux .simple-flake8 .editor':
+  'ctrl-shift-f': 'simple-flake8:toggle'
