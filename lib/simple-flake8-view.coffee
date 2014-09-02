@@ -68,13 +68,14 @@ flake = (filePath, callback) ->
 
 module.exports =
 
+class SimpleFlake8View extends SelectListView
+
   configDefaults:
     flake8Path: "/usr/bin/flake8"
     ignoreErrors: ""
     mcCabeComplexityThreshold: ""
     validateOnSave: true
 
-class SimpleFlake8View extends SelectListView
   @activate: ->
     new SimpleFlake8View
 
@@ -106,22 +107,22 @@ class SimpleFlake8View extends SelectListView
       @eventElement = @previouslyFocusedElement
     else
       @eventElement = atom.workspaceView
-    @keyBindings = atom.keymap.findKeyBindings(target: @eventElement[0])
 
     filePath = editor.getPath()
 
     flake filePath, (errors) ->
       if errors.length == 0
         return
-      else
-        errors = []
-        for error in errors:
-          if error.type
-            message = error.type + " " + error.message
-          else
-            message = error.message
-          errors.push({message, error})
-        @setItems(errors)
+
+      events = []
+      for error in errors
+        if error.type
+          message = error.type + " " + error.message
+        else
+          message = error.message
+        console.log(message)
+        events.push({message, error})
+      @setItems(events)
 
     # events = []
     # for eventName, eventDescription of _.extend($(window).events(), @eventElement.events())
