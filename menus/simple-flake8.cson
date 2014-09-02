@@ -1,14 +1,5 @@
 'menu': [
   {
-    'label': 'View'
-    'submenu': [
-      {
-        'label': 'Toggle Simple Flake8'
-        'command': 'simple-flake8:toggle'
-      }
-    ]
-  }
-  {
     'label': 'Packages'
     'submenu': [
       {
