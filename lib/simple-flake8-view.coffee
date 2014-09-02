@@ -4,11 +4,12 @@ byline = require 'byline'
 fs = require 'fs'
 {$, $$, SelectListView} = require 'atom'
 
+# Basic flake8 parsing tool with callback functionality
 flake = (filePath, callback) ->
   line_expr = /:(\d+):(\d+): ([CEFW]\d{3}) (.*)/
   errors = []
   currentIndex = -1
-  skipLine = false
+  skip_line = false
 
   params = ["--show-source", filePath]
   ignoreErrors = atom.config.get "flake8.ignoreErrors"
@@ -44,20 +45,20 @@ flake = (filePath, callback) ->
         "line": parseInt(line)
       }
       currentIndex += 1
-      skipLine = false
+      skip_line = false
     else
-      if not skipLine
+      if not skip_line
         errors[currentIndex].evidence = line.toString().trim()
-        skipLine = true
+        skip_line = true
 
   # Watch for the exit code
   proc.on 'exit', (exit_code, signal) ->
     if exit_code == 1 and errors.length == 0
-      console.log('Flake8 is crashing. Check flake8 bin path.')
+      console.log('Flake8 may have crashed. Check flake8 bin path.')
     callback errors
 
-module.exports =
 
+module.exports =
 
 class SimpleFlake8View extends SelectListView
 
@@ -92,10 +93,10 @@ class SimpleFlake8View extends SelectListView
     return unless editor?
     return unless editor.getGrammar().name == 'Python'
 
-    @storeFocusedElement()
+    # @storeFocusedElement()
     filePath = editor.getPath()
 
-    @setLoading('Running Flake8 Lint...')
+    @setLoading('Running Flake8 Linter...')
     atom.workspaceView.append(this)
     @focusFilterEditor()
 
@@ -110,28 +111,31 @@ class SimpleFlake8View extends SelectListView
         else
           message = error.message
         # console.log(message)
-        error_list.push({message, error})
+        error_list.push(error)
 
       @setItems(error_list)
 
-    if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
-      @eventElement = @previouslyFocusedElement
-    else
-      @eventElement = atom.workspaceView
+    # if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
+    #   @eventElement = @previouslyFocusedElement
+    # else
+    #   @eventElement = atom.workspaceView
 
-  viewForItem: ({message, error}) ->
-    console.log('Processing: ' + message)
-    # data = '<li class="event"><div class="pull-right"></div><span title="error">' + message + '</span></li>'
-    # console.log('Returning html: ' + data)
-    # return data
-    base_msg = error.type + ' - ' + error.message
+  viewForItem: (error) ->
+    if error.type
+      base_msg = error.type + ' - ' + error.message
+    else
+      base_msg = error.message
     $$ ->
       @li class: 'event', 'data-event-name': error.type, =>
         @div class: 'pull-right', =>
             # Use the keybinding class to display line numbers
             @kbd "Line: " + error.line, class: 'key-binding'
-        @span base_msg[0..65], title: message
+        @span base_msg[0..65], title: error.message
 
-  confirmed: ({eventName}) ->
+  confirmed: (error) ->
     @cancel()
-    @eventElement.trigger(eventName)
+    if error
+      editor = atom.workspace.getActiveEditor()
+      line = error.line
+      pos = error.position
+    editor.cursors[0].setBufferPosition([line, pos], options={'autoscroll': true})
