@@ -104,6 +104,7 @@ class SimpleFlake8View extends SelectListView
     flake filePath, (errors) =>
       error_list = []
       if errors.length == 0
+        @cancel()
         return
 
       for error in errors
