@@ -59,31 +59,27 @@ flake = (filePath, callback) ->
     callback errors
 
 
-# module.exports =
 class SimpleFlake8View extends SelectListView
 
   configDefaults:
     flake8Path: "/usr/bin/flake8"
     ignoreErrors: ""
     mcCabeComplexityThreshold: ""
-    # validateOnSave: true
+    validateOnSave: true
 
-  activate: ->
-    console.log('Activating Flake8 Linter')
+  @activate: ->
+    new SimpleFlake8View
+
+  activate: (state) ->
+    atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
+    atom.workspaceView.command 'core:save', =>
+      on_save = atom.config.get "simple-flake8.validateOnSave"
+      if on_save == true
+        @toggle()
 
   initialize: ->
     super
-
     @addClass('simple-flake8 overlay from-top')
-    atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
-
-    # atom.config.observe 'simple-flake8.validateOnSave', {callNow: true}, (value) ->
-    # if value == true
-    #   atom.workspace.eachEditor (editor) ->
-    #     editor.buffer.on 'saved', @attach
-    # else
-    #   atom.workspace.eachEditor (editor) ->
-    #     editor.buffer.off 'saved', @attach
 
   getFilterKey: ->
     'message'
@@ -134,9 +130,10 @@ class SimpleFlake8View extends SelectListView
     @cancel()
     if error
       editor = atom.workspace.getActiveEditor()
-      line = error.line
-      pos = error.position
-    editor.cursors[0].setBufferPosition([line, pos], options={'autoscroll': true})
+      editor.cursors[0].setBufferPosition(
+        [error.line, error.position],
+        options={'autoscroll': true}
+      )
 
 
 module.exports = new SimpleFlake8View()
