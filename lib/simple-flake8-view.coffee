@@ -1,7 +1,6 @@
 _ = require 'underscore-plus'
 process = require 'child_process'
 byline = require 'byline'
-fs = require 'fs'
 {$, $$, SelectListView} = require 'atom'
 
 # Basic flake8 parsing tool with callback functionality
@@ -14,13 +13,7 @@ flake = (filePath, callback) ->
   params = ["--show-source", filePath]
   ignoreErrors = atom.config.get "simple-flake8.ignoreErrors"
   mcCabeComplexityThreshold = atom.config.get "simple-flake8.mcCabeComplexityThreshold"
-  flake8Path = atom.config.get "simple-flake8.flake8Path"
-
-  if not fs.existsSync(flake8Path)
-    console.log('not at ' + flake8Path)
-    console.log("Unable to get report, please check flake8 bin path")
-    callback errors
-    return
+  flake8cmd = atom.config.get "simple-flake8.flake8Command"
 
   if not not ignoreErrors
     params.push("--ignore=#{ ignoreErrors }")
@@ -28,7 +21,7 @@ flake = (filePath, callback) ->
   if not not mcCabeComplexityThreshold
     params.push("--max-complexity=#{ mcCabeComplexityThreshold }")
 
-  proc = process.spawn flake8Path, params
+  proc = process.spawn flake8cmd, params
 
   # Watch for flake8 errors
   output = byline(proc.stdout)
@@ -55,14 +48,14 @@ flake = (filePath, callback) ->
   # Watch for the exit code
   proc.on 'exit', (exit_code, signal) ->
     if exit_code == 1 and errors.length == 0
-      console.log('Flake8 may have crashed. Check flake8 bin path.')
+      console.log('Flake8 crashed or is unavailable. Check command path.')
     callback errors
 
 
 class SimpleFlake8View extends SelectListView
 
   configDefaults:
-    flake8Path: "/usr/bin/flake8"
+    flake8Command: "flake8"
     ignoreErrors: ""
     mcCabeComplexityThreshold: ""
     validateOnSave: true
