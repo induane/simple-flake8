@@ -125,9 +125,9 @@ class SimpleFlake8View extends SelectListView
     if error
       editor = atom.workspace.getActiveEditor()
 
-      # Go to line -1 due to differencing in line number indexing
+      # Go to line -1 due to differencing in indexing
       editor.cursors[0].setBufferPosition(
-        [error.line - 1, error.position],
+        [error.line - 1, error.position -1],
         options={'autoscroll': true}
       )
 
