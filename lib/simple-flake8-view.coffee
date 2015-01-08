@@ -59,18 +59,14 @@ class SimpleFlake8View extends SelectListView
     ignoreErrors: ""
     mcCabeComplexityThreshold: ""
     validateOnSave: true
+  keyBindings: null
 
   @activate: ->
     view = new SimpleFlake8View
     @disposable = atom.commands.add 'atom-workspace', 'simple-flake8:toggle', -> view.toggle()
 
-  # @activate: ->
-  #   new SimpleFlake8View
-
   @deactivate: ->
     @disposable.dispose()
-
-  cancelled: -> @hide()
 
   activate: (state) ->
     atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
@@ -86,6 +82,8 @@ class SimpleFlake8View extends SelectListView
   getFilterKey: ->
     'message'
 
+  cancelled: -> @hide()
+
   toggle: ->
     if @panel?.isVisible()
     # if @hasParent()
@@ -93,15 +91,11 @@ class SimpleFlake8View extends SelectListView
     else
       @attach()
 
-  hide: ->
-    @panel?.hide()
-
-  # attach: ->
   show: ->
-
-    # editor = atom.workspace.getActiveEditor()
-    # return unless editor?
-    # return unless editor.getGrammar().name == 'Python'
+    # Get out of here unless this is a python file
+    editor = atom.workspace.getActiveEditor()
+    return unless editor?
+    return unless editor.getGrammar().name == 'Python'
 
 
     @panel ?= atom.workspace.addModalPanel(item: this)
@@ -109,16 +103,13 @@ class SimpleFlake8View extends SelectListView
 
     @storeFocusedElement()
 
+    @setLoading('Running Flake8 Linter...')
+
     if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
       @eventElement = @previouslyFocusedElement[0]
     else
       @eventElement = atom.views.getView(atom.workspace)
-    @keyBindings = atom.keymap.findKeyBindings(target: @eventElement)
 
-    @setLoading('Running Flake8 Linter...')
-
-    # atom.workspaceView.append(this)
-    # @focusFilterEditor()
     filePath = editor.getPath()
 
     flake filePath, (errors) =>
@@ -135,7 +126,7 @@ class SimpleFlake8View extends SelectListView
         error_list.push(error)
       @setItems(error_list)
 
-      @focusFilterEditor()
+    @focusFilterEditor()
 
   hide: ->
     @panel?.hide()
