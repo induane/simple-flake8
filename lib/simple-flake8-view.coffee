@@ -77,7 +77,8 @@ class SimpleFlake8View extends SelectListView
 
   initialize: ->
     super
-    @addClass('simple-flake8 overlay from-top')
+    @addClass('simple-flake8')
+    # @addClass('simple-flake8 overlay from-top')
 
   getFilterKey: ->
     'message'
@@ -91,6 +92,7 @@ class SimpleFlake8View extends SelectListView
       @show()
 
   show: ->
+    console.log('hi');
     # Get out of here unless this is a python file
     editor = atom.workspace.getActiveEditor()
     return unless editor?
@@ -154,4 +156,3 @@ class SimpleFlake8View extends SelectListView
 
 
 module.exports = new SimpleFlake8View()
-

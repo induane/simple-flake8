@@ -3,13 +3,19 @@
   "version": "0.8.6",
   "main": "./lib/simple-flake8-view",
   "description": "Finds flake8 linting errors using `cmd-shift-8`(OSX) or `ctrl-shift-8`(Linux/Wndows).",
+  "activationCommands": {
+    "atom-workspace": [
+      "simple-flake8:toggle"
+    ]
+  },
   "repository": "https://github.com/induane/simple-flake8",
   "license": "MIT",
   "engines": {
     "atom": "*"
   },
   "dependencies": {
-    "underscore-plus": "1.x",
+    "atom-space-pen-views": "^2.0.0",
+    "underscore-plus": "^1.0.0",
     "byline": "4.1.1"
   }
 }
