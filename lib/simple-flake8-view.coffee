@@ -61,7 +61,14 @@ class SimpleFlake8View extends SelectListView
     validateOnSave: true
 
   @activate: ->
-    new SimpleFlake8View
+    view = new SimpleFlake8View
+    @disposable = atom.commands.add 'atom-workspace', 'simple-flake8:toggle', -> view.toggle()
+
+  # @activate: ->
+  #   new SimpleFlake8View
+
+  @deactivate: ->
+    @disposable.dispose()
 
   cancelled: -> @hide()
 
@@ -89,14 +96,20 @@ class SimpleFlake8View extends SelectListView
   hide: ->
     @panel?.hide()
 
-  attach: ->
-    editor = atom.workspace.getActiveEditor()
-    return unless editor?
-    return unless editor.getGrammar().name == 'Python'
+  # attach: ->
+  show: ->
+
+    # editor = atom.workspace.getActiveEditor()
+    # return unless editor?
+    # return unless editor.getGrammar().name == 'Python'
 
     filePath = editor.getPath()
 
     @setLoading('Running Flake8 Linter...')
+
+    @panel ?= atom.workspace.addModalPanel(item: this)
+    @panel.show()
+
     atom.workspaceView.append(this)
     @focusFilterEditor()
 
@@ -113,6 +126,9 @@ class SimpleFlake8View extends SelectListView
           message = error.message
         error_list.push(error)
       @setItems(error_list)
+
+  hide: ->
+    @panel?.hide()
 
   viewForItem: (error) ->
     if error.type
