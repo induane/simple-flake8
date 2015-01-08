@@ -105,12 +105,12 @@ class SimpleFlake8View extends SelectListView
 
     filePath = editor.getPath()
 
-    @setLoading('Running Flake8 Linter...')
-
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
 
-    atom.workspaceView.append(this)
+    @setLoading('Running Flake8 Linter...')
+
+    # atom.workspaceView.append(this)
     @focusFilterEditor()
 
     flake filePath, (errors) =>
