@@ -1,7 +1,7 @@
 _ = require 'underscore-plus'
 process = require 'child_process'
 byline = require 'byline'
-{$, $$, SelectListView} = require 'atom'
+{SelectListView, $, $$} = require 'atom-space-pen-views'
 
 # Basic flake8 parsing tool with callback functionality
 flake = (filePath, callback) ->
@@ -86,17 +86,15 @@ class SimpleFlake8View extends SelectListView
 
   toggle: ->
     if @panel?.isVisible()
-    # if @hasParent()
       @cancel()
     else
-      @attach()
+      @show()
 
   show: ->
     # Get out of here unless this is a python file
     editor = atom.workspace.getActiveEditor()
     return unless editor?
     return unless editor.getGrammar().name == 'Python'
-
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
@@ -156,3 +154,4 @@ class SimpleFlake8View extends SelectListView
 
 
 module.exports = new SimpleFlake8View()
+
