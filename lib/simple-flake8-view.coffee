@@ -103,15 +103,23 @@ class SimpleFlake8View extends SelectListView
     # return unless editor?
     # return unless editor.getGrammar().name == 'Python'
 
-    filePath = editor.getPath()
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
 
+    @storeFocusedElement()
+
+    if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
+      @eventElement = @previouslyFocusedElement[0]
+    else
+      @eventElement = atom.views.getView(atom.workspace)
+    @keyBindings = atom.keymap.findKeyBindings(target: @eventElement)
+
     @setLoading('Running Flake8 Linter...')
 
     # atom.workspaceView.append(this)
-    @focusFilterEditor()
+    # @focusFilterEditor()
+    filePath = editor.getPath()
 
     flake filePath, (errors) =>
       error_list = []
@@ -126,6 +134,8 @@ class SimpleFlake8View extends SelectListView
           message = error.message
         error_list.push(error)
       @setItems(error_list)
+
+      @focusFilterEditor()
 
   hide: ->
     @panel?.hide()
