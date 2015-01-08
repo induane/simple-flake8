@@ -78,7 +78,6 @@ class SimpleFlake8View extends SelectListView
   initialize: ->
     super
     @addClass('simple-flake8')
-    # @addClass('simple-flake8 overlay from-top')
 
   getFilterKey: ->
     'message'
@@ -92,7 +91,6 @@ class SimpleFlake8View extends SelectListView
       @show()
 
   show: ->
-    console.log('hi');
     # Get out of here unless this is a python file
     editor = atom.workspace.getActiveEditor()
     return unless editor?
@@ -102,7 +100,6 @@ class SimpleFlake8View extends SelectListView
     @panel.show()
 
     @storeFocusedElement()
-
     @setLoading('Running Flake8 Linter...')
 
     if @previouslyFocusedElement[0] and @previouslyFocusedElement[0] isnt document.body
@@ -111,7 +108,6 @@ class SimpleFlake8View extends SelectListView
       @eventElement = atom.views.getView(atom.workspace)
 
     filePath = editor.getPath()
-
     flake filePath, (errors) =>
       error_list = []
       if errors.length == 0
