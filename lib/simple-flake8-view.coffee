@@ -63,6 +63,8 @@ class SimpleFlake8View extends SelectListView
   @activate: ->
     new SimpleFlake8View
 
+  cancelled: -> @hide()
+
   activate: (state) ->
     atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
     atom.workspaceView.command 'core:save', =>
@@ -78,10 +80,14 @@ class SimpleFlake8View extends SelectListView
     'message'
 
   toggle: ->
-    if @hasParent()
+    if @panel?.isVisible()
+    # if @hasParent()
       @cancel()
     else
       @attach()
+
+  hide: ->
+    @panel?.hide()
 
   attach: ->
     editor = atom.workspace.getActiveEditor()
