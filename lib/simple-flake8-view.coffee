@@ -51,7 +51,7 @@ flake = (filePath, callback) ->
       console.log('Flake8 crashed or is unavailable. Check command path.')
     callback errors
 
-
+module.exports =
 class SimpleFlake8View extends SelectListView
 
   configDefaults:
@@ -60,6 +60,16 @@ class SimpleFlake8View extends SelectListView
     mcCabeComplexityThreshold: ""
     validateOnSave: true
   keyBindings: null
+
+  constructor: (serializedState) ->
+    atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
+    atom.workspaceView.command 'core:save', =>
+      on_save = atom.config.get "simple-flake8.validateOnSave"
+      if on_save == true
+        @toggle()
+
+  # Returns an object that can be retrieved when package is activated
+  serialize: ->
 
   @activate: ->
     view = new SimpleFlake8View
@@ -82,6 +92,9 @@ class SimpleFlake8View extends SelectListView
   getFilterKey: ->
     'message'
 
+  getGrammar: ->
+    @displayBuffer.getGrammar()
+
   cancelled: -> @hide()
 
   toggle: ->
@@ -91,10 +104,7 @@ class SimpleFlake8View extends SelectListView
       @show()
 
   show: ->
-    # Get out of here unless this is a python file
-    editor = atom.workspace.getActiveEditor()
-    return unless editor?
-    return unless editor.getGrammar().name == 'Python'
+    return unless @getGrammar().name == 'Python'
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
