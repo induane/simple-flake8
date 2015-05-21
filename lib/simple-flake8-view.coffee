@@ -13,7 +13,7 @@ flake = (filePath, callback) ->
   params = ["--show-source", filePath]
   ignoreErrors = atom.config.get "simple-flake8.ignoreErrors"
   mcCabeComplexityThreshold = atom.config.get "simple-flake8.mcCabeComplexityThreshold"
-  flake8cmd = atom.config.get("simple-flake8.flake8Command", "flake8")
+  flake8cmd = atom.config.get "simple-flake8.flake8Command"
   console.log(flake8cmd)
   if ignoreErrors
     params.push("--ignore=#{ ignoreErrors }")
