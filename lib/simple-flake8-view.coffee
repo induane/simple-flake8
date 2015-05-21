@@ -61,16 +61,6 @@ class SimpleFlake8View extends SelectListView
     validateOnSave: true
   keyBindings: null
 
-  constructor: (serializedState) ->
-    atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
-    atom.workspaceView.command 'core:save', =>
-      on_save = atom.config.get "simple-flake8.validateOnSave"
-      if on_save == true
-        @toggle()
-
-  # Returns an object that can be retrieved when package is activated
-  serialize: ->
-
   @activate: ->
     view = new SimpleFlake8View
     @disposable = atom.commands.add 'atom-workspace', 'simple-flake8:toggle', -> view.toggle()
