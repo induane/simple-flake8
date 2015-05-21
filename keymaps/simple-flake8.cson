@@ -1,8 +1,8 @@
-'.platform-darwin, .platform-darwin .simple-flake8 .editor':
+'.platform-darwin atom-text-editor, .platform-darwin .simple-flake8':
   'cmd-shift-8': 'simple-flake8:toggle'
 
-'.platform-win32, .platform-win32 .simple-flake8 .editor':
+'.platform-win32 atom-text-editor, .platform-win32 .simple-flake8':
   'ctrl-shift-8': 'simple-flake8:toggle'
 
-'.platform-linux, .platform-linux .simple-flake8 .editor':
+'.platform-linux atom-text-editor, .platform-linux .simple-flake8':
   'ctrl-shift-8': 'simple-flake8:toggle'
