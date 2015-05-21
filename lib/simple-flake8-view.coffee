@@ -93,7 +93,9 @@ class SimpleFlake8View extends SelectListView
     'message'
 
   getGrammar: ->
-    @displayBuffer.getGrammar()
+    editor = atom.workspace.getActiveTextEditor()
+    return unless editor?
+    return editor.getGrammar().name
 
   cancelled: -> @hide()
 
@@ -104,7 +106,8 @@ class SimpleFlake8View extends SelectListView
       @show()
 
   show: ->
-    return unless @getGrammar().name == 'Python'
+    # Get out of here unless this is a python file
+    return unless @getGrammar() == 'Python'
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
