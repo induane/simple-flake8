@@ -14,11 +14,11 @@ flake = (filePath, callback) ->
   ignoreErrors = atom.config.get "simple-flake8.ignoreErrors"
   mcCabeComplexityThreshold = atom.config.get "simple-flake8.mcCabeComplexityThreshold"
   flake8cmd = atom.config.get "simple-flake8.flake8Command"
-
-  if not not ignoreErrors
+  console.log(flake8cmd)
+  if ignoreErrors
     params.push("--ignore=#{ ignoreErrors }")
 
-  if not not mcCabeComplexityThreshold
+  if mcCabeComplexityThreshold
     params.push("--max-complexity=#{ mcCabeComplexityThreshold }")
 
   proc = process.spawn flake8cmd, params
@@ -53,13 +53,20 @@ flake = (filePath, callback) ->
 
 module.exports =
 class SimpleFlake8View extends SelectListView
-
-  configDefaults:
-    flake8Command: "flake8"
-    ignoreErrors: ""
-    mcCabeComplexityThreshold: ""
-    validateOnSave: true
   keyBindings: null
+  config:
+    flake8Command:
+      type: "string"
+      default: "flake8"
+    ignoreErrors:
+      type: "boolean"
+      default: false
+    mcCabeComplexityThreshold:
+      type: "string"
+      default: ""
+    validateOnSave:
+      type: "boolean"
+      default: true
 
   @activate: ->
     view = new SimpleFlake8View
@@ -68,9 +75,9 @@ class SimpleFlake8View extends SelectListView
   @deactivate: ->
     @disposable.dispose()
 
-  activate: (state) ->
-    atom.workspaceView.command 'simple-flake8:toggle', => @toggle()
-    atom.workspaceView.command 'core:save', =>
+  activate: ->
+    atom.commands.add 'atom-text-editor', 'simple-flake8:toggle', => @toggle()
+    atom.commands.add 'atom-text-editor', 'core:save', =>
       on_save = atom.config.get "simple-flake8.validateOnSave"
       if on_save == true
         @toggle()
@@ -79,13 +86,9 @@ class SimpleFlake8View extends SelectListView
     super
     @addClass('simple-flake8')
 
+
   getFilterKey: ->
     'message'
-
-  getGrammar: ->
-    editor = atom.workspace.getActiveTextEditor()
-    return unless editor?
-    return editor.getGrammar().name
 
   cancelled: -> @hide()
 
@@ -97,7 +100,9 @@ class SimpleFlake8View extends SelectListView
 
   show: ->
     # Get out of here unless this is a python file
-    return unless @getGrammar() == 'Python'
+    editor = atom.workspace.getActiveTextEditor()
+    return unless editor?
+    return unless editor.getGrammar().name == 'Python'
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
@@ -111,6 +116,7 @@ class SimpleFlake8View extends SelectListView
       @eventElement = atom.views.getView(atom.workspace)
 
     filePath = editor.getPath()
+    console.log(filePath)
     flake filePath, (errors) =>
       error_list = []
       if errors.length == 0
@@ -145,7 +151,7 @@ class SimpleFlake8View extends SelectListView
   confirmed: (error) ->
     @cancel()
     if error
-      editor = atom.workspace.getActiveEditor()
+      editor = atom.workspace.getActiveTextEditor()
 
       # Go to line -1 due to differencing in indexing
       editor.cursors[0].setBufferPosition(
