@@ -42,7 +42,10 @@ flake = (filePath, callback) ->
       skip_line = false
     else
       if not skip_line
-        errors[currentIndex].evidence = line.toString().trim()
+        try
+            errors[currentIndex].evidence = line.toString().trim()
+        catch error
+            print error
         skip_line = true
 
   # Watch for the exit code
