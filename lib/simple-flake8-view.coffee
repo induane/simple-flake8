@@ -43,9 +43,9 @@ flake = (filePath, callback) ->
     else
       if not skip_line
         try
-            errors[currentIndex].evidence = line.toString().trim()
+          errors[currentIndex].evidence = line.toString().trim()
         catch error
-            print error
+          console.log error
         skip_line = true
 
   # Watch for the exit code
