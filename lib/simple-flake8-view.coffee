@@ -105,7 +105,7 @@ class SimpleFlake8View extends SelectListView
     # Get out of here unless this is a python file
     editor = atom.workspace.getActiveTextEditor()
     return unless editor?
-    return unless editor.getGrammar().name == 'Python'
+    return unless editor.getGrammar().name in ['Python', 'MagicPython']
 
     @panel ?= atom.workspace.addModalPanel(item: this)
     @panel.show()
