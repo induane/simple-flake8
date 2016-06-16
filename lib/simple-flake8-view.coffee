@@ -14,12 +14,16 @@ flake = (filePath, callback) ->
   ignoreErrors = atom.config.get "simple-flake8.ignoreErrors"
   mcCabeComplexityThreshold = atom.config.get "simple-flake8.mcCabeComplexityThreshold"
   flake8cmd = atom.config.get "simple-flake8.flake8Command"
+  flake8params = atom.config.get "simple-flake8.cmdLineArguments"
   console.log(flake8cmd)
   if ignoreErrors
     params.push("--ignore=#{ ignoreErrors }")
 
   if mcCabeComplexityThreshold
     params.push("--max-complexity=#{ mcCabeComplexityThreshold }")
+
+  if flake8params
+    params.push(flake8params)
 
   proc = process.spawn flake8cmd, params
 
@@ -65,6 +69,9 @@ class SimpleFlake8View extends SelectListView
       type: "boolean"
       default: false
     mcCabeComplexityThreshold:
+      type: "string"
+      default: ""
+    cmdLineArguments:
       type: "string"
       default: ""
     validateOnSave:
