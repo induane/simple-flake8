@@ -5,7 +5,7 @@ byline = require 'byline'
 
 # Basic flake8 parsing tool with callback functionality
 flake = (filePath, callback) ->
-  line_expr = /:(\d+):(\d+): ([CEFW]\d{3}) (.*)/
+  line_expr = /:(\d+):(\d+): ([A-Z]\d{3}) (.*)/
   errors = []
   currentIndex = -1
   skip_line = false
